@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitVault - USDT Institutional Terminal</title>
+    <style>
+        :root {
+            --bg-body: #07090e;
+            --bg-card: #11151e;
+            --bg-hover: #19202e;
+            --border-color: #1f2738;
+            --text-primary: #ffffff;
+            --text-secondary: #8b94a5;
+            --usdt-green: #26a17b;
+            --usdt-green-bg: rgba(38, 161, 123, 0.12);
+            --usdt-red: #f87171;
+            --brand-orange: #f7931a;
+            --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: radial-gradient(circle at 10% 10%, rgba(38, 161, 123, 0.05) 0%, transparent 45%),
+                              radial-gradient(circle at 90% 90%, rgba(247, 147, 26, 0.04) 0%, transparent 45%);
+        }
+
+        /* 顶部导航栏 */
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 50px;
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 19px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--usdt-green);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: #fff;
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+        .brand-logo:hover .brand-icon {
+            transform: scale(1.05);
+        }
+
+        nav {
+            display: flex;
+            gap: 32px;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 26px 0;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        nav a.active, nav a:hover {
+            color: var(--text-primary);
+            border-bottom-color: var(--usdt-green);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #171f2e;
+            padding: 8px 18px;
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .avatar {
+            width: 30px;
+            height: 30px;
+            background: var(--usdt-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 13px;
+            font-family: var(--font-mono);
+            letter-spacing: -0.5px;
+        }
+
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 35px auto;
+            padding: 0 30px;
+            flex: 1;
+        }
+
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+
+        /* 主页 Hero 卡片 */
+        .home-hero {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 38px 40px 24px 40px;
+            text-align: center;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .token-icon-large {
+            width: 44px;
+            height: 44px;
+            background: var(--usdt-green-bg);
+            border: 2px solid var(--usdt-green);
+            color: var(--usdt-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0 auto 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .token-icon-large:hover {
+            transform: scale(1.08);
+        }
+
+        .home-balance {
+            font-size: 38px;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+        }
+
+        .market-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--usdt-green);
+            font-size: 14px;
+            font-weight: 600;
+            font-family: var(--font-mono);
+            margin-bottom: 16px;
+            background: var(--usdt-green-bg);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .chart-container {
+            width: calc(100% + 80px);
+            margin-left: -40px;
+            margin-right: -40px;
+            height: 110px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .time-filters {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+
+        .time-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .time-btn.active, .time-btn:hover {
+            background: #171f2e;
+            color: var(--text-primary);
+            border-color: var(--usdt-green);
+        }
+
+        /* 快捷操作卡片 */
+        .quick-actions-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px 40px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .quick-actions {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+        }
+
+        .action-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+        }
+
+        .action-circle {
+            width: 52px;
+            height: 52px;
+            background: #171f2e;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--usdt-green);
+            transition: all 0.25s ease;
+        }
+
+        .action-item:hover .action-circle {
+            background: var(--usdt-green);
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(38, 161, 123, 0.3);
+        }
+
+        .action-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* 下方多功能标签页区 */
+        .assets-section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px 30px;
+        }
+
+        .assets-tabs {
+            display: flex;
+            gap: 28px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+        }
+
+        .assets-tab {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .assets-tab.active {
+            color: var(--text-primary);
+        }
+
+        .assets-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -13px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--usdt-green);
+        }
+
+        .tab-content-pane { display: none; }
+        .tab-content-pane.active { display: block; }
+
+        .asset-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(31, 39, 56, 0.5);
+        }
+
+        .asset-row:last-child { border-bottom: none; }
+
+        .asset-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .mini-token-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .usdt-bg { background: var(--usdt-green-bg); color: var(--usdt-green); }
+        .trx-bg { background: rgba(248, 113, 113, 0.15); color: var(--usdt-red); }
+
+        .asset-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+        .asset-sub { 
+            font-size: 13px; 
+            color: var(--text-secondary); 
+            font-family: var(--font-mono); 
+        }
+
+        .asset-right { text-align: right; }
+        .asset-amount { font-size: 15px; font-weight: 600; font-family: var(--font-mono); margin-bottom: 2px; }
+        .asset-fiat-val { font-size: 13px; color: var(--text-secondary); }
+
+        /* Accounts & Transaction 页面 */
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .select-box {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .tx-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 70vh;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .tx-list::-webkit-scrollbar { width: 6px; }
+        .tx-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+
+        .tx-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 18px 26px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s;
+        }
+
+        .tx-card:hover { background-color: var(--bg-hover); }
+
+        .tx-left { display: flex; align-items: center; gap: 18px; }
+
+        .tx-icon {
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tx-icon.received { background: var(--usdt-green-bg); color: var(--usdt-green); }
+        .tx-icon.sent { background: rgba(248, 113, 113, 0.15); color: var(--usdt-red); }
+
+        .tx-info h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+        .tx-info p { font-size: 13px; color: var(--text-secondary); font-family: var(--font-mono); }
+
+        .tx-right { text-align: right; }
+        .tx-amount { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .tx-amount.received { color: var(--usdt-green); }
+        .tx-amount.sent { color: var(--text-primary); }
+        .tx-date { font-size: 13px; color: var(--text-secondary); }
+
+        /* 弹窗公用样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 1000;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .custom-modal {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+            width: 440px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        /* 触发按钮样式 */
+        .modal-plugin-trigger {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, rgba(38, 161, 123, 0.25), rgba(38, 161, 123, 0.08));
+            border: 1px solid var(--usdt-green);
+            color: var(--usdt-green);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(38, 161, 123, 0.4);
+            transition: all 0.2s;
+            z-index: 1200;
+        }
+        .modal-plugin-trigger:hover {
+            background: var(--usdt-green);
+            transform: scale(1.08);
+            box-shadow: 0 0 25px rgba(38, 161, 123, 0.7);
+        }
+
+        .modal-title { font-size: 20px; font-weight: 600; margin-bottom: 8px; text-align: center; }
+        .modal-sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; text-align: center; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+        .form-input {
+            width: 100%;
+            background: #171f2e;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: var(--font-mono);
+            outline: none;
+        }
+
+        .btn-main {
+            width: 100%;
+            background: var(--usdt-green);
+            color: #000;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: opacity 0.2s;
+        }
+        .btn-main:hover { opacity: 0.9; }
+        
+        .btn-close-modal {
+            width: 100%;
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            padding: 10px;
+            margin-top: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* 6位 PIN 码键盘弹窗 */
+        .pin-modal { width: 380px; text-align: center; }
+        .pin-dots { display: flex; justify-content: center; gap: 12px; margin-bottom: 28px; }
+        .dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border-color); transition: all 0.15s; }
+        .dot.filled { background-color: var(--usdt-green); border-color: var(--usdt-green); box-shadow: 0 0 10px rgba(38, 161, 123, 0.5); }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .key { background: #171f2e; border: 1px solid var(--border-color); color: var(--text-primary); padding: 14px; font-size: 18px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: background 0.1s; }
+        .key:active { background: var(--border-color); }
+
+        /* 真伪检测程序专用终端样式 */
+        .terminal-modal { width: 780px; background: #030508; border: 1px solid #1e3a2f; box-shadow: 0 0 50px rgba(0,0,0,0.95); z-index: 1300; }
+        .terminal-screen {
+            background: #010204;
+            border: 1px solid #0f261b;
+            border-radius: 8px;
+            padding: 16px;
+            height: 320px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: #26a17b;
+            line-height: 1.45;
+            margin-bottom: 20px;
+            text-align: left;
+            word-break: break-all;
+            text-transform: uppercase;
+        }
+        .terminal-screen::-webkit-scrollbar { width: 4px; }
+        .terminal-screen::-webkit-scrollbar-thumb { background: var(--usdt-green); }
+        .success-banner {
+            margin-top: 10px;
+            padding: 14px;
+            background: rgba(38, 161, 123, 0.15);
+            border: 1px solid var(--usdt-green);
+            color: var(--usdt-green);
+            font-weight: 700;
+            font-family: var(--font-mono);
+            text-align: center;
+            border-radius: 8px;
+            font-size: 16px;
+            display: none;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 顶栏 -->
+    <header>
+        <div class="header-left">
+            <div class="brand-logo" onclick="switchView('home')">
+                <div class="brand-icon">₮</div>
+                <span>BitVault</span>
+            </div>
+            <nav>
+                <a id="nav-home" class="active" onclick="switchView('home')">Home</a>
+                <a id="nav-accounts" onclick="requestUnlockAccounts()">Accounts & Transaction</a>
+                <a onclick="alert('Mainnet Node Connection: TRON Node Online')">Network</a>
+            </nav>
+        </div>
+        <div class="user-profile">
+            <div class="avatar">TY</div>
+            <div class="user-name">TYiHe9x...8s6J2f</div>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- 视图 1：HOME 主页 -->
+        <div id="view-home" class="view-section active">
+            <div class="home-hero">
+                <div class="token-icon-large" onclick="switchView('accounts')">₮</div>
+                <div class="home-balance" id="displayBalance">50,280,000.00 USDT</div>
+
+                <div class="market-trend" id="displayTrend">
+                    ▲ +6.36% (+$315,420.50)
+                </div>
+
+                <div class="chart-container">
+                    <svg width="100%" height="110" viewBox="0 0 800 160" preserveAspectRatio="none">
+                        <path id="chartPath" d="M0,100 Q100,60 200,90 T400,40 T600,70 T800,20" fill="none" stroke="var(--usdt-green)" stroke-width="2.5"></path>
+                        <path id="chartGradientPath" d="M0,100 Q100,60 200,90 T400,40 T600,70 T800,20 L800,160 L0,160 Z" fill="url(#greenGradient)" opacity="0.18"></path>
+                        <defs>
+                            <linearGradient id="greenGradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="var(--usdt-green)"/>
+                                <stop offset="100%" stop-color="transparent"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+
+                <div class="time-filters">
+                    <button class="time-btn active" onclick="changeTimeFrame('24h')">24H</button>
+                    <button class="time-btn" onclick="changeTimeFrame('1w')">1W</button>
+                    <button class="time-btn" onclick="changeTimeFrame('1m')">1M</button>
+                    <button class="time-btn" onclick="changeTimeFrame('1y')">1Y</button>
+                </div>
+            </div>
+
+            <!-- 快捷操作卡片 -->
+            <div class="quick-actions-card">
+                <div class="quick-actions">
+                    <button class="action-item" onclick="openModal('sendModal')">
+                        <div class="action-circle">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                        </div>
+                        <span class="action-label">Send</span>
+                    </button>
+                    <button class="action-item" onclick="openModal('receiveModal')">
+                        <div class="action-circle">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 19V5m0 14l-6-6m6 6l6-6"/></svg>
+                        </div>
+                        <span class="action-label">Receive</span>
+                    </button>
+                    <button class="action-item" onclick="requestUnlockAccounts()">
+                        <div class="action-circle">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                        </div>
+                        <span class="action-label">Transaction</span>
+                    </button>
+                    <button class="action-item" onclick="openModal('swapModal')">
+                        <div class="action-circle">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+                        </div>
+                        <span class="action-label">Swap</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 下方标签页区 -->
+            <div class="assets-section">
+                <div class="assets-tabs">
+                    <div class="assets-tab active" onclick="switchTab('wallet')">Wallet</div>
+                    <div class="assets-tab" onclick="switchTab('collectibles')">Collectibles</div>
+                    <div class="assets-tab" onclick="switchTab('earn')">Earn</div>
+                    <div class="assets-tab" onclick="switchTab('explore')">Explore</div>
+                </div>
+
+                <!-- 1. Wallet 标签页内容 -->
+                <div id="pane-wallet" class="tab-content-pane active">
+                    <div class="asset-row">
+                        <div class="asset-left">
+                            <div class="mini-token-icon usdt-bg">₮</div>
+                            <div>
+                                <div class="asset-name">Tether USD</div>
+                                <div class="asset-sub">USDT (TRC-20 Main Network)</div>
+                            </div>
+                        </div>
+                        <div class="asset-right">
+                            <div class="asset-amount">50,280,000.00 USDT</div>
+                            <div class="asset-fiat-val">$421,334,655.04 USD</div>
+                        </div>
+                    </div>
+                    <div class="asset-row">
+                        <div class="asset-left">
+                            <div class="mini-token-icon trx-bg">⚡</div>
+                            <div>
+                                <div class="asset-name">Tron Energy</div>
+                                <div class="asset-sub">TRX Staked for Gas-Free Transfers</div>
+                            </div>
+                        </div>
+                        <div class="asset-right">
+                            <div class="asset-amount">45,230.00 TRX</div>
+                            <div class="asset-fiat-val">$5,879.90 USD</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Collectibles 标签页内容 -->
+                <div id="pane-collectibles" class="tab-content-pane">
+                    <div class="asset-row">
+                        <div class="asset-left">
+                            <div class="mini-token-icon" style="background: rgba(247, 147, 26, 0.15); color: var(--brand-orange);">🖼️</div>
+                            <div>
+                                <div class="asset-name">BitVault Genesis Pass #08</div>
+                                <div class="asset-sub">ERC-721 Institutional Membership NFT</div>
+                            </div>
+                        </div>
+                        <div class="asset-right">
+                            <div class="asset-amount">1 Edition</div>
+                            <div class="asset-fiat-val">Verified Rare</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Earn 标签页内容 -->
+                <div id="pane-earn" class="tab-content-pane">
+                    <div class="asset-row">
+                        <div class="asset-left">
+                            <div class="mini-token-icon usdt-bg">📈</div>
+                            <div>
+                                <div class="asset-name">USDT Flexible Staking</div>
+                                <div class="asset-sub">Institutional High-Yield Pool (APY 5.8%)</div>
+                            </div>
+                        </div>
+                        <div class="asset-right">
+                            <div class="asset-amount">2,000,000.00 USDT</div>
+                            <div class="asset-fiat-val">Daily Yield: +317.80 USDT</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Explore 标签页内容 -->
+                <div id="pane-explore" class="tab-content-pane">
+                    <div class="asset-row">
+                        <div class="asset-left">
+                            <div class="mini-token-icon" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">🌐</div>
+                            <div>
+                                <div class="asset-name">TRON Decentralized Exchange</div>
+                                <div class="asset-sub">Cross-Chain Liquidity & Staking Router</div>
+                            </div>
+                        </div>
+                        <div class="asset-right">
+                            <div class="asset-amount" style="color: var(--usdt-green); cursor: pointer;" onclick="alert('Redirecting to TRON Ecosystem DApp...')">Launch DApp →</div>
+                            <div class="asset-fiat-val">Online</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 视图 2：Accounts & Transaction 页面 -->
+        <div id="view-accounts" class="view-section">
+            <div class="home-hero" style="padding: 20px 30px; margin-bottom: 20px;">
+                <div class="home-fiat" style="margin-bottom: 8px; font-size: 15px;">Total Balance</div>
+                <div class="home-balance" style="font-size: 28px; margin-bottom: 0;">50,280,000.00 USDT</div>
+            </div>
+
+            <!-- 筛选栏 -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <select class="select-box" id="typeFilter" onchange="filterTransactions()">
+                        <option value="all">All Transactions</option>
+                        <option value="received">Received Only</option>
+                        <option value="sent">Sent Only</option>
+                    </select>
+                    <select class="select-box" id="timeFilter" onchange="filterTransactions()">
+                        <option value="all">All Time</option>
+                        <option value="30">Last 30 Days</option>
+                        <option value="60">Last 60 Days</option>
+                        <option value="90">Last 90 Days</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <div style="font-size: 13px; color: var(--text-secondary); font-family: var(--font-mono);">
+                        Vault: TYiHe9x...8s6J2f
+                    </div>
+                </div>
+            </div>
+
+            <!-- 交易记录列表 -->
+            <div class="tx-list" id="txListContainer">
+                <div class="tx-card" data-type="received" data-days="0" onclick="openTxDetail()" style="cursor: pointer;" title="Click to view transaction details">
+                    <div class="tx-left">
+                        <div class="tx-icon received"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div>
+                        <div class="tx-info">
+                            <h4>Received USDT</h4>
+                            <p>From: 0x9f88...c11a</p>
+                        </div>
+                    </div>
+                    <div class="tx-right">
+                        <div class="tx-amount received">+ 50,000,000.00 USDT</div>
+                        <div class="tx-date">Just now</div>
+                    </div>
+                </div>
+
+                <div class="tx-card" data-type="sent" data-days="3" onclick="openTxDetail()" style="cursor: pointer;">
+                    <div class="tx-left">
+                        <div class="tx-icon sent"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg></div>
+                        <div class="tx-info">
+                            <h4>Sent USDT</h4>
+                            <p>To: 0x3b41...88e2</p>
+                        </div>
+                    </div>
+                    <div class="tx-right">
+                        <div class="tx-amount sent">- 120,000.00 USDT</div>
+                        <div class="tx-date">3 days ago</div>
+                    </div>
+                </div>
+
+                <div class="tx-card" data-type="received" data-days="7" onclick="openTxDetail()" style="cursor: pointer;">
+                    <div class="tx-left">
+                        <div class="tx-icon received"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div>
+                        <div class="tx-info">
+                            <h4>Received USDT</h4>
+                            <p>From: 0x7c22...91f4</p>
+                        </div>
+                    </div>
+                    <div class="tx-right">
+                        <div class="tx-amount received">+ 850,000.00 USDT</div>
+                        <div class="tx-date">7 days ago</div>
+                    </div>
+                </div>
+
+                <div class="tx-card" data-type="sent" data-days="12" onclick="openTxDetail()" style="cursor: pointer;">
+                    <div class="tx-left">
+                        <div class="tx-icon sent"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg></div>
+                        <div class="tx-info">
+                            <h4>Sent USDT</h4>
+                            <p>To: 0x1120...44a9</p>
+                        </div>
+                    </div>
+                    <div class="tx-right">
+                        <div class="tx-amount sent">- 45,000.00 USDT</div>
+                        <div class="tx-date">12 days ago</div>
+                    </div>
+                </div>
+
+                <div class="tx-card" data-type="received" data-days="18" onclick="openTxDetail()" style="cursor: pointer;">
+                    <div class="tx-left">
+                        <div class="tx-icon received"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div>
+                        <div class="tx-info">
+                            <h4>Received USDT</h4>
+                            <p>From: 0x8891...bb20</p>
+                        </div>
+                    </div>
+                    <div class="tx-right">
+                        <div class="tx-amount received">+ 300,000.00 USDT</div>
+                        <div class="tx-date">18 days ago</div>
+                    </div>
+                </div>
+
+                <div class="tx-card" data-type="sent" data-days="25" onclick="openTxDetail()" style="cursor: pointer;">
+                    <div class="tx-left">
+                        <div class="tx-icon sent"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg></div>
+                        <div class="tx-info">
+                            <h4>Sent USDT</h4>
+                            <p>To: 0x66f4...10c3</p>
+                        </div>
+                    </div>
+                    <div class="tx-right">
+                        <div class="tx-amount sent">- 10,000.00 USDT</div>
+                        <div class="tx-date">25 days ago</div>
+                    </div>
+                </div>
+
+                <div class="tx-card" data-type="received" data-days="35" onclick="openTxDetail()" style="cursor: pointer;">
+                    <div class="tx-left">
+                        <div class="tx-icon received"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div>
+                        <div class="tx-info">
+                            <h4>Received USDT</h4>
+                            <p>From: 0x4421...99ea</p>
+                        </div>
+                    </div>
+                    <div class="tx-right">
+                        <div class="tx-amount received">+ 1,200,000.00 USDT</div>
+                        <div class="tx-date">35 days ago</div>
+                    </div>
+                </div>
+
+                <div class="tx-card" data-type="sent" data-days="45" onclick="openTxDetail()" style="cursor: pointer;">
+                    <div class="tx-left">
+                        <div class="tx-icon sent"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg></div>
+                        <div class="tx-info">
+                            <h4>Sent USDT</h4>
+                            <p>To: 0x9923...ff11</p>
+                        </div>
+                    </div>
+                    <div class="tx-right">
+                        <div class="tx-amount sent">- 250,000.00 USDT</div>
+                        <div class="tx-date">45 days ago</div>
+                    </div>
+                </div>
+
+                <div class="tx-card" data-type="received" data-days="60" onclick="openTxDetail()" style="cursor: pointer;">
+                    <div class="tx-left">
+                        <div class="tx-icon received"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div>
+                        <div class="tx-info">
+                            <h4>Received USDT</h4>
+                            <p>From: 0x3310...77b8</p>
+                        </div>
+                    </div>
+                    <div class="tx-right">
+                        <div class="tx-amount received">+ 500,000.00 USDT</div>
+                        <div class="tx-date">60 days ago</div>
+                    </div>
+                </div>
+
+                <div class="tx-card" data-type="sent" data-days="75" onclick="openTxDetail()" style="cursor: pointer;">
+                    <div class="tx-left">
+                        <div class="tx-icon sent"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg></div>
+                        <div class="tx-info">
+                            <h4>Sent USDT</h4>
+                            <p>To: 0x5541...22d9</p>
+                        </div>
+                    </div>
+                    <div class="tx-right">
+                        <div class="tx-amount sent">- 88,000.00 USDT</div>
+                        <div class="tx-date">75 days ago</div>
+                    </div>
+                </div>
+
+                <div class="tx-card" data-type="received" data-days="90" onclick="openTxDetail()" style="cursor: pointer;">
+                    <div class="tx-left">
+                        <div class="tx-icon received"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div>
+                        <div class="tx-info">
+                            <h4>Received USDT</h4>
+                            <p>From: 0x2219...44a2</p>
+                        </div>
+                    </div>
+                    <div class="tx-right">
+                        <div class="tx-amount received">+ 2,000,000.00 USDT</div>
+                        <div class="tx-date">90 days ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 弹窗 1：6位 PIN 码解锁弹窗 -->
+    <div class="modal-overlay" id="pinModal">
+        <div class="custom-modal pin-modal">
+            <div class="modal-title">Security Verification</div>
+            <div class="modal-sub">Enter your current BITVAULT PIN</div>
+            <div class="pin-dots">
+                <div class="dot" id="dot-1"></div>
+                <div class="dot" id="dot-2"></div>
+                <div class="dot" id="dot-3"></div>
+                <div class="dot" id="dot-4"></div>
+                <div class="dot" id="dot-5"></div>
+                <div class="dot" id="dot-6"></div>
+            </div>
+            <div class="keypad">
+                <button class="key" onclick="pressKey('1')">1</button>
+                <button class="key" onclick="pressKey('2')">2</button>
+                <button class="key" onclick="pressKey('3')">3</button>
+                <button class="key" onclick="pressKey('4')">4</button>
+                <button class="key" onclick="pressKey('5')">5</button>
+                <button class="key" onclick="pressKey('6')">6</button>
+                <button class="key" onclick="pressKey('7')">7</button>
+                <button class="key" onclick="pressKey('8')">8</button>
+                <button class="key" onclick="pressKey('9')">9</button>
+                <button class="key" onclick="clearPin()">C</button>
+                <button class="key" onclick="pressKey('0')">0</button>
+                <button class="key" onclick="closePinModal()">✕</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗 2：Send 发送弹窗 -->
+    <div class="modal-overlay" id="sendModal">
+        <div class="custom-modal">
+            <div class="modal-title">Send USDT</div>
+            <div class="modal-sub">TRC-20 Institutional Transfer Protocol</div>
+            <div class="form-group">
+                <label class="form-label">Recipient Address</label>
+                <input type="text" class="form-input" value="T9yD14Nj9j7xAB4cc283091">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Amount (USDT)</label>
+                <input type="text" class="form-input" value="50,000.00">
+            </div>
+            <button class="btn-main" onclick="alert('Broadcasting Transaction to Node... Signed & Approved.'); closeModal('sendModal');">Sign & Broadcast</button>
+            <button class="btn-close-modal" onclick="closeModal('sendModal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- 弹窗 3：Receive 接收弹窗 -->
+    <div class="modal-overlay" id="receiveModal">
+        <div class="custom-modal" style="text-align: center;">
+            <div class="modal-title">Deposit USDT</div>
+            <div class="modal-sub">Scan QR code or copy address below</div>
+            <div style="background: #fff; padding: 15px; display: inline-block; border-radius: 12px; margin-bottom: 15px;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TYiHe9x8s6J2fCorporateVaultTRC20" alt="QR">
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 12px; color: var(--usdt-green); background: #171f2e; padding: 10px; border-radius: 8px; word-break: break-all; margin-bottom: 20px;">
+                TYiHe9x8s6J2fCorporateVaultTRC20
+            </div>
+            <button class="btn-main" onclick="alert('Vault address copied to clipboard!'); closeModal('receiveModal');">Copy Address</button>
+            <button class="btn-close-modal" onclick="closeModal('receiveModal')">Close</button>
+        </div>
+    </div>
+
+    <!-- 弹窗 4：Swap 兑换弹窗 -->
+    <div class="modal-overlay" id="swapModal">
+        <div class="custom-modal">
+            <div class="modal-title">Instant Asset Swap</div>
+            <div class="modal-sub">DEX Liquidity Pool Integration</div>
+            <div class="form-group">
+                <label class="form-label">You Pay</label>
+                <input type="text" class="form-input" value="100,000.00 USDT">
+            </div>
+            <div class="form-group">
+                <label class="form-label">You Receive (Estimated)</label>
+                <input type="text" class="form-input" value="1.2505 BTC" style="color: var(--brand-orange);">
+            </div>
+            <button class="btn-main" onclick="alert('Swap executed successfully via DEX router!'); closeModal('swapModal');">Confirm Swap</button>
+            <button class="btn-close-modal" onclick="closeModal('swapModal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- 弹窗 5：Transaction Detail 详细资料弹窗 -->
+    <div class="modal-overlay" id="txDetailModal">
+        <!-- 整个网页右上角的触发按钮 -->
+        <button class="modal-plugin-trigger" onclick="openVerifyModal()" title="Run Authenticity Verification">🛡️</button>
+        
+        <div class="custom-modal">
+            <div class="modal-title">Transaction Details</div>
+            <div class="modal-sub">TRC-20 Transfer Verification</div>
+            <div style="background: #171f2e; padding: 16px; border-radius: 10px; font-size: 13px; font-family: var(--font-mono); margin-bottom: 20px; line-height: 1.6;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: var(--text-secondary);">Status:</span>
+                    <span style="color: var(--usdt-green);">Confirmed (28 blocks)</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: var(--text-secondary);">Amount:</span>
+                    <span style="color: var(--usdt-green); font-weight: bold;">+ 50,000,000.00 USDT</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: var(--text-secondary);">Sender:</span>
+                    <span>0x9f88...c11a</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: var(--text-secondary);">Recipient Vault:</span>
+                    <span>TYiHe9x...8s6J2f</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-secondary);">TxHash:</span>
+                    <span style="color: var(--usdt-green);">0x8f4c...91b2</span>
+                </div>
+            </div>
+            <button class="btn-main" onclick="closeModal('txDetailModal')">Close</button>
+        </div>
+    </div>
+
+    <!-- 弹窗 6：真伪检测终端弹窗 -->
+    <div class="modal-overlay" id="verifyModal">
+        <div class="custom-modal terminal-modal">
+            <div class="modal-title" style="color: #26a17b; font-family: var(--font-mono); font-size: 16px;">[ TRON_NODE_CORE // INTEGRITY_CHECK ]</div>
+            <div class="modal-sub">EXECUTING LOW-LEVEL BYTECODE & MERKLE TREE VERIFICATION</div>
+            
+            <div class="terminal-screen" id="terminalScreen">
+                > INITIALIZING CRYPTOGRAPHIC ENVIRONMENT V4.12.8...<br>
+                > CONNECTING TO TRON FULL-NODE CLUSTER...<br>
+            </div>
+
+            <div class="success-banner" id="successBanner">
+                ALL CHECKS PASSED
+            </div>
+
+            <button class="btn-main" id="closeVerifyBtn" style="background: #171f2e; color: #26a17b; border: 1px solid var(--usdt-green); display: none;" onclick="closeModal('verifyModal')">CLOSE TERMINAL</button>
+        </div>
+    </div>
+
+    <script>
+        let currentPin = "";
+
+        function requestUnlockAccounts() {
+            document.getElementById('pinModal').classList.add('active');
+            clearPin();
+        }
+
+        function closePinModal() {
+            document.getElementById('pinModal').classList.remove('active');
+            clearPin();
+        }
+
+        function pressKey(num) {
+            if (currentPin.length < 6) {
+                currentPin += num;
+                updateDots();
+                if (currentPin.length === 6) {
+                    setTimeout(() => {
+                        closePinModal();
+                        switchView('accounts');
+                    }, 250);
+                }
+            }
+        }
+
+        function clearPin() {
+            currentPin = "";
+            updateDots();
+        }
+
+        function updateDots() {
+            for (let i = 1; i <= 6; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                if (i <= currentPin.length) {
+                    dot.classList.add('filled');
+                } else {
+                    dot.classList.remove('filled');
+                }
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            const pinModal = document.getElementById('pinModal');
+            if (pinModal.classList.contains('active')) {
+                if (e.key >= '0' && e.key <= '9') {
+                    pressKey(e.key);
+                } else if (e.key === 'Backspace' || e.key === 'c' || e.key === 'C') {
+                    clearPin();
+                } else if (e.key === 'Escape') {
+                    closePinModal();
+                }
+            }
+        });
+
+        function switchView(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('nav a').forEach(el => el.classList.remove('active'));
+
+            if (viewName === 'home') {
+                document.getElementById('view-home').classList.add('active');
+                document.getElementById('nav-home').classList.add('active');
+            } else if (viewName === 'accounts') {
+                document.getElementById('view-accounts').classList.add('active');
+                document.getElementById('nav-accounts').classList.add('active');
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.assets-tab').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-content-pane').forEach(el => el.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(`pane-${tabName}`).classList.add('active');
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function openTxDetail() {
+            openModal('txDetailModal');
+        }
+
+        function openVerifyModal() {
+            openModal('verifyModal');
+            const screen = document.getElementById('terminalScreen');
+            const banner = document.getElementById('successBanner');
+            const closeBtn = document.getElementById('closeVerifyBtn');
+
+            screen.innerHTML = "> INITIALIZING CRYPTOGRAPHIC ENVIRONMENT V4.12.8...<br>> CONNECTING TO TRON FULL-NODE CLUSTER...<br>";
+            banner.style.display = 'none';
+            closeBtn.style.display = 'none';
+
+            const logs = [
+                `> [SEC] LOADING SECP256K1 ELLIPTIC CURVE CRYPTO LIBRARIES... [OK]`,
+                `> [NET] ESTABLISHING SECURE WEBSOCKET TUNNEL TO TRON FULL-NODE...`,
+                `> [TLS] HANDSHAKE PROTOCOL ACTIVE: TLS_AES_256_GCM_SHA384`,
+                `> MATRIX_STREAM_01: 0X8F4C91B23A7E5D8F4C91B23A7E5D8F4C91B23A7E`,
+                `> [QUERY] FETCHING LATEST BLOCK HEIGHT...`,
+                `> [MEMPOOL] SCANNING PENDING TRANSACTIONS IN TRON TRANSACTION POOL...`,
+                `> [STATE] QUERYING SMART CONTRACT STATE: TR7NHQJEKQXGTCI8Q8ZY4PL8OTSZGJLJ6T (USDT)`,
+                `> MATRIX_STREAM_02: 389104725691308472563109478235610493278561`,
+                `> [PARSER] DECODING EVM BYTECODE INSTRUCTIONS: PUSH1 0X80 PUSH1 0X40 MSTORE CALLVALUE...`,
+                `> [GAS] CALCULATING ENERGY CONSUMPTION AND BANDWIDTH ALLOCATION FEES...`,
+                `> [VERIFY] VALIDATING MERKLE PATRICIA TREE ROOT HASH AGAINST LOCAL HEADER...`,
+                `> MATRIX_STREAM_03: 6138472905147823095648219024E8A2B9177`,
+                `> [VALIDATOR] CHECKING BLOCK SIGNATURE DISTRIBUTION ACROSS SR NODES...`,
+                `> [MEMORY] ALLOCATING BUFFER 0X7FFF5FBFF880 -> CHECKSUM MATCH`,
+                `> [CACHE] FLUSHING TEMPORARY STATE TRIE DATABASE AND INDEX TABLES...`,
+                `> [STORAGE] ACCESSING ROCKSDB PERSISTENT KEY-VALUE STORE INSTANCE...`,
+                `> [INDEX] REBUILDING TRANSACTION RECEIPT BLOOM FILTERS... [SUCCESS]`,
+                `> [SIGNATURE] VERIFYING ED25519 CORPORATE VAULT SIGNATURE CREDENTIALS...`,
+                `> [CONSENSUS] POLLING SUPER REPRESENTATIVES...`,
+                `> [SECURITY] ANTI-REENTRANCY GUARD AND STACK DEPTH BOUNDARY CHECK: PASSED`,
+                `> [AUDIT] ZERO-KNOWLEDGE PROOF CIRCUIT VERIFICATION: PASSED`,
+                `> [SYNC] NODE SYNCHRONIZATION STATUS: 100%`,
+                `> [DIAGNOSTIC] RUNNING RUNTIME HEAP INTEGRITY SWEEP... [0 LEAKS FOUND]`,
+                `> [CRYPTO_ENGINE] EXECUTING KECCAK-256 HASH HASHING PIPELINE...`,
+                `> [NODE_SYNC] PEER DISCOVERY: CONNECTED TO VALIDATION NODES WORLDWIDE`,
+                `> [LEDGER] VERIFYING ACCOUNT ROOT STATE TRIE...`,
+                `> [TRC20_CHECK] TRANSFER EVENT LOGS VERIFIED...`,
+                `> [MEMPOOL_DRAIN] CLEARING STALE TRANSACTION IDENTIFIERS... [OK]`,
+                `> MATRIX_STREAM_04: 9918237465019283746550192837465`,
+                `> [VM_EXEC] GAS LIMIT: 30,000,000 | GAS USED: 21,430`,
+                `> [SIGN_VERIFY] PUBLIC KEY RECOVERY PARAMETER V=27 R=0X4A... S=0X9F...`,
+                `> [CORE_CACHE] L1 CACHE HIT RATIO: 99.84%`,
+                `> [BLOCK_HEADER] PARENT HASH MATCHING CHECK: SUCCESS`,
+                `> [NONCE_CHECK] ACCOUNT NONCE SEQUENCING VERIFIED`,
+                `> [RATE_LIMIT] API QUOTA CHECK: UNLIMITED (INSTITUTIONAL LICENSE)`,
+                `> [BYPASS_CHECK] FIREWALL INTRUSION DETECTION SYSTEM: CLEAR`,
+                `> [DB_FLUSH] WRITING INTERMEDIATE STATES TO DISK... [OK]`,
+                `> [ENTROPY] GENERATING CRYPTOGRAPHIC PSEUDO-RANDOM SEED... [DONE]`,
+                `> [CIPHER] AES-256-GCM BLOCK CIPHER STREAM VALIDATION: PASSED`,
+                `> [SHARD_SYNC] SHARD CLUSTER SYNCHRONIZED WITH MASTER LEDGER`,
+                `> [ROOT_HASH] VERIFYING STATE ROOT AGAINST GLOBAL CHECKPOINT...`,
+                `> [BUFFER_ALLOC] ALLOCATING DYNAMIC MEMORY SLOTS 0X00 - 0XFF...`,
+                `> [THREAD_POOL] SPAWNING PARALLEL DECRYPTION WORKERS...`,
+                `> [PKCS_11] INITIALIZING HARDWARE SECURITY MODULE (HSM) INTERFACE...`,
+                `> [KEY_DERIVATION] PBKDF2 WITH HMAC-SHA512 ITERATION COUNT 100,000...`,
+                `> [BLOCK_PARSER] PARSING HEADER METADATA...`,
+                `> [STATE_TRIE] MERKLE NODE VERIFICATION: HASH MATCH...`,
+                `> [PEER_CONNECT] HANDSHAKE SENT TO NODE...`,
+                `> [PEER_ACK] CONNECTION ACKNOWLEDGED.`,
+                `> [TX_POOL_SYNC] SYNCHRONIZING UNCONFIRMED TRANSACTIONS...`,
+                `> [SMART_CONTRACT] EXECUTING FALLBACK FUNCTION ON ADDRESS TR7NHQ...`,
+                `> [BYTECODE_ANALYSIS] STACK CHECK: OVERFLOW = FALSE, UNDERFLOW = FALSE`,
+                `> [GAS_METER] DEDUCTING 0.000000 TRX FROM VALIDATOR STAKE...`,
+                `> [SIGNATURE_RECOVERY] SECP256K1 RECOVERING PUBLIC KEY FROM R, S, V...`,
+                `> [HASH_CHAIN] COMPUTING PREV_HASH LINK VALIDITY... [VALID]`,
+                `> [DB_COMPACTION] ROCKSDB COMPACTION STARTED...`,
+                `> [DB_COMPACTION] COMPACTION COMPLETED.`,
+                `> [NETWORK_MONITOR] PACKET LOSS: 0.00%`,
+                `> [CACHE_INVALIDATION] PURGING STALE ENTRIES FROM QUERY CACHE...`,
+                `> [ZERO_KNOWLEDGE] GENERATING PROOF WITNESS...`,
+                `> [ZKP_VERIFY] SNARK-PARSER VERIFIED PROOF VALIDITY`,
+                `> [INSTITUTIONAL_AUTH] CHECKING CORPORATE PERMISSIONS MATRIX...`,
+                `> [ROLE_CHECK] USER 'YI HE' - ROLE: INSTITUTIONAL_ADMIN [VERIFIED]`,
+                `> [SESSION_TOKEN] ROTATING SESSION CRYPTOGRAPHIC NONCE...`,
+                `> [IP_WHITELIST] CHECKING CLIENT IP AGAINST STRICT BINDING LIST...`,
+                `> [FIREWALL_RULE] RULE #412: ALLOW TRC20 PROTOCOL TRAFFIC [PASSED]`,
+                `> [MEMORY_MAP] MAPPING SHARED MEMORY SEGMENT FOR IPC...`,
+                `> [ENCLAVE_CHECK] INTEL SGX SECURE ENCLAVE STATUS: ONLINE & LOCKED`,
+                `> [ENTROPY_POOL] MIXING HARDWARE TRNG NOISE INTO SEED BUFFER...`,
+                `> [CHECKPOINT_VERIFY] GLOBAL CHECKPOINT SIGNATURE VALIDATED`,
+                `> [LEDGER_SYNC] BLOCK COMMITTED TO PERMANENT STORAGE`,
+                `> [EVENT_EMITTER] FIRING TRANSFER EVENT...`,
+                `> [BALANCE_CHECK] RE-VERIFYING VAULT BALANCE: 50,280,000.00 USDT`,
+                `> [STAKING_ROUTINE] CALCULATING ACCRUED YIELD FOR POOL #2...`,
+                `> [YIELD_CALC] YIELD ACCRUED SECURELY`,
+                `> [ORACLE_FEED] FETCHING BTC/USDT PRICE FROM CHAINLINK ORACLE...`,
+                `> [ORACLE_PRICE] PRICE VARIANCE: [STABLE]`,
+                `> [LIQUIDITY_POOL] DEX ROUTER LIQUIDITY DEPTH VERIFIED`,
+                `> [CROSS_CHAIN_BRIDGE] MONITORING RELAY CONTRACTS ON ETH/TRON...`,
+                `> [RELAY_STATUS] NO PENDING CROSS-CHAIN ARBITRAGE DETECTED`,
+                `> [AUDIT_LOGGER] WRITING AUDIT TRAIL TO IMMUTABLE WORM STORAGE...`,
+                `> [WORM_STORAGE] BLOCK WRITTEN AT SECTOR [OK]`,
+                `> [SYSTEM_HEALTH] RESOURCE ALLOCATION NOMINAL`,
+                `> [THREAD_SYNC] ALL WORKER THREADS RETURNED EXIT CODE 0`,
+                `> [FINAL_FLUSH] FLUSHING KERNEL BUFFERS TO NON-VOLATILE MEDIA...`,
+                `> [GATEWAY_READY] TERMINAL READY FOR SECURE USER SESSION.`,
+                `> [SEC_OVERRIDE] BYPASSING LEGACY PROTOCOL RESTRICTIONS...`,
+                `> [CORE_INIT] LOADING NEURAL SYNC MODULE...`,
+                `> [MATRIX_RENDER] HIGH-DENSITY STREAM GENERATION ACTIVE...`,
+                `> [STREAM_SPEED] DENSITY LOGIC SECURED...`,
+                `> [FINAL_CHECK] INTEGRITY DIAGNOSTIC SWEEP COMPLETED WITH 0 ERRORS.`,
+                `> [SYSTEM] AUTHORIZATION GRANTED FOR VAULT ID: TYIHE9X...8S6J2F`,
+                `> [FINAL] ALL CRYPTOGRAPHIC CONSTRAINTS SATISFIED SUCCESSFULLY.`
+            ];
+
+            let index = 0;
+            const interval = setInterval(() => {
+                if (index < logs.length) {
+                    screen.innerHTML += logs[index] + "<br>";
+                    screen.scrollTop = screen.scrollHeight;
+                    index++;
+                } else {
+                    clearInterval(interval);
+                    banner.style.display = 'block';
+                    closeBtn.style.display = 'block';
+                    screen.scrollTop = screen.scrollHeight;
+                }
+            }, 20); 
+        }
+
+    </script>
+</body>
+</html>
